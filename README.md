@@ -21,7 +21,7 @@ for any damages whatsoever, even if it had been advised of the possibility of da
 This application is available from the PyPI. Simply run the following command to download and install the latest version
 
 ```
-    pip3 install -U pocketbook
+pip3 install -U pocketbook
 ```
 
 ## Creating a new address
@@ -29,7 +29,7 @@ This application is available from the PyPI. Simply run the following command to
 To create a new address simply run the following command:
 
 ```
-    pocketbook create
+pocketbook create
 ```
 
 You will be prompted to enter a name for this key pair, followed by a password for the key. Below is a sample output:
@@ -56,7 +56,7 @@ The example above is querying the `devnet` network. If you do not specify a netw
 The wallet also has an address book. You can add addresses with the following command:
 
 ```
-    pocketbook add <name-for-the-address> <address>
+pocketbook add <name-for-the-address> <address>
 ```
 
 ## Making a transfer
@@ -64,39 +64,39 @@ The wallet also has an address book. You can add addresses with the following co
 To make a transfer you would use the `transfer` command in the following form:
 
 ```
-    pocketbook -n devnet transfer <destination-name> <amount> <source-main>
+pocketbook -n devnet transfer <destination-name> <amount> <source-main>
 ```
 
 For example, if you wanted to send `10` FET from your address called `main` to another address called `other` you would
 use the following command:
 
 ```
-    pocketbook -n devnet transfer other 10 main
+pocketbook -n devnet transfer other 10 main
 ```
 
 You would then be prompted with a summary of the transfer (before it happens) so that you can verify the details.
 
 ```
-    Network....: devnet
-    From.......: main
-    Signers....: ['main']
-    Destination: UAHCrmwEEmYBNFt8mJXZB6CiqJ2kZcGsR8tjj3f6GkZuR7YnR
-    Amount.....: 10 FET
+Network....: devnet
+From.......: main
+Signers....: ['main']
+Destination: UAHCrmwEEmYBNFt8mJXZB6CiqJ2kZcGsR8tjj3f6GkZuR7YnR
+Amount.....: 10 FET
     
-    Press enter to continue
+Press enter to continue
 ```
 
 If you are happy with the transfer, then press enter to continue. You will be then prompted for the password for your
 signing account.
 
 ```
-    Enter password for key main:
+Enter password for key main:
 ```
 
 After this you except to see the following as the transaction is submitted to the network. This process by default 
 blocks until the transaction has been included into the chain
 
 ```
-    Submitting TX...
-    Submitting TX...complete
+Submitting TX...
+Submitting TX...complete
 ```
