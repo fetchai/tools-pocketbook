@@ -11,6 +11,7 @@ from fetchai.ledger.serialisation.transaction import encode_transaction
 from .address_book import AddressBook
 from .key_store import KeyStore
 from .table import Table
+from . import __version__
 
 
 DISCLAIMER = """
@@ -137,6 +138,7 @@ def run_display(args):
 
 def parse_commandline():
     parser = argparse.ArgumentParser(prog='pocketbook')
+    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument('-n', '--network', default='mainnet', help='The name of the target being addressed')
     subparsers = parser.add_subparsers()
 

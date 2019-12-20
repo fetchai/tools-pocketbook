@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from pocketbook import __version__
 
 setup(
     name='pocketbook',
-    version='0.2.0',
+    version=__version__,
     description='Command line wallet application for the Fetch.ai network',
     url='https://github.com/fetchai/tools-pocketbook',
     author='Edward FitzGerald',
