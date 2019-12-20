@@ -14,9 +14,6 @@ could completely or partially limit functionality or compromise computer systems
 implement the ledger, you do so at your own risk. In no event will Fetch.ai be liable to any party
 for any damages whatsoever, even if it had been advised of the possibility of damage.
 
-As such this codebase should be treated as experimental and does not contain all currently developed
-features. Fetch.AI will be delivering regular updates.
-
 # Getting Started
 
 ## Installation
