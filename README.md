@@ -69,7 +69,6 @@ To make a transfer you would use the `transfer` command in the following form
 
 ```
     pocketbook -n devnet transfer <destination-name> <amount> <source-main>
-
 ```
 
 If you wanted to send `10` FET from your address called `main` to another address called `other` you would use the
