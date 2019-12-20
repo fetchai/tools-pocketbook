@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 import getpass
 
 from fetchai.ledger.api import LedgerApi
@@ -10,6 +11,18 @@ from fetchai.ledger.serialisation.transaction import encode_transaction
 from .address_book import AddressBook
 from .key_store import KeyStore
 from .table import Table
+
+
+DISCLAIMER = """
+                                == Warning ==
+
+You use this application at your own risk. Whilst Fetch.ai have made every
+effort to ensure its reliability and security, it comes with no warranty. It is
+intended for the creation and management of Fetch.ai mainnet wallets and
+transactions between them. You are responsible for the security of your own
+private keys (see ~/.pocketbook folder). Do not use this application for
+high-value operations: it is intended for utility operations on the main network.
+"""
 
 
 class NetworkUnavailableError(Exception):
@@ -230,6 +243,12 @@ def run_transfer(args):
 
 
 def main():
+
+    # disclaimer
+    if not os.path.join(KeyStore.KEY_STORE_ROOT):
+        print(DISCLAIMER)
+        input('Press enter to accept')
+
     parser, args = parse_commandline()
 
     # select the command handler
