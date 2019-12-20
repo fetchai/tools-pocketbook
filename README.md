@@ -35,8 +35,7 @@ To create a new address simply run the following command:
     pocketbook create
 ```
 
-You will be prompted to enter a name for this key pair on the command line followed by the password for the key. Below 
-is a sample output
+You will be prompted to enter a name for this key pair, followed by a password for the key. Below is a sample output:
 
 ```
 Enter name for key: foo
@@ -52,7 +51,7 @@ You can query the balance of your account with the following command:
 pocketbook -n devnet list
 ```
 
-The example above is querying the `devnet` network. 
+The example above is querying the `devnet` network. If you do not specify a network, `mainnet` will be used.
 
 
 ## Adding addresses
@@ -65,20 +64,20 @@ The wallet also has an address book. You can add addresses with the following co
 
 ## Making a transfer
 
-To make a transfer you would use the `transfer` command in the following form
+To make a transfer you would use the `transfer` command in the following form:
 
 ```
     pocketbook -n devnet transfer <destination-name> <amount> <source-main>
 ```
 
-If you wanted to send `10` FET from your address called `main` to another address called `other` you would use the
-following command:
+For example, if you wanted to send `10` FET from your address called `main` to another address called `other` you would
+use the following command:
 
 ```
     pocketbook -n devnet transfer other 10 main
 ```
 
-You would then be prompted with a summary of the transfer (before it happens):
+You would then be prompted with a summary of the transfer (before it happens) so that you can verify the details.
 
 ```
     Network....: devnet
