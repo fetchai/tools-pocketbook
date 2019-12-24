@@ -158,6 +158,9 @@ def parse_commandline():
     parser_add.add_argument('address', type=Address, help='The account address')
     parser_add.set_defaults(handler=run_add)
 
+    parser_add = subparsers.add_parser('import', help='Imports an private key')
+    parser_add.set_defaults(handler=run_import)
+
     parser_transfer = subparsers.add_parser('transfer')
     parser_transfer.add_argument('destination',
                                  help='The destination address either a name in the address book or an address')
@@ -172,6 +175,56 @@ def parse_commandline():
 def run_add(args):
     address_book = AddressBook()
     address_book.add(args.name, args.address)
+
+def run_import(args):
+    key_store = KeyStore()
+
+    # get the name for the new key
+    while True:
+        name = input('Enter name for key: ')
+        if name in key_store.list_keys():
+            print('Key name already exists')
+            continue
+        break
+
+    # prompt the user for the password
+    while True:
+        key_str = getpass.getpass('Enter private key (hex of b64 encoded)...: ')
+
+        try:
+            e = Entity.from_hex(key_str)
+        except:
+            try:
+                e = Entity.from_base64(key_str)
+            except:
+                print('Given key is not ecdsa secp256k1 priv key encoded as either hex or base64!')
+                continue
+
+        print('\nAssociated address: {}'.format(Address(e)))
+        print('Associated public key [hex]: {}'.format(e.public_key_hex))
+        print('Associated public key [b64]: {}'.format(e.public_key))
+        confirm = input('\nIs above correct? [y/N]: ')
+        if confirm.lower() != 'y':
+            print("\n=====================================\n")
+            continue
+
+        break
+
+    # prompt the user for the password
+    while True:
+        password = getpass.getpass('Enter password for key...: ')
+        if not is_strong_password(password):
+            print('Password too simple, try again')
+            continue
+
+        confirm = getpass.getpass('Confirm password for key.: ')
+        if password != confirm:
+            print('Passwords did not match, try again')
+            continue
+
+        break
+
+    key_store.add_key(name, password, e)
 
 
 def run_transfer(args):
