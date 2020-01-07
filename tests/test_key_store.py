@@ -5,9 +5,8 @@ import toml
 from fetchai.ledger.crypto import Entity, Address
 
 from pocketbook.key_store import KeyStore, DuplicateKeyNameError, KeyNotFoundError, UnableToDecodeKeyError
-from .utils import TemporaryPocketBookRoot
+from .utils import TemporaryPocketBookRoot, SUPER_SECURE_PASSWORD
 
-SUPER_SECURE_PASSWORD = 'Fetch!Ai-ToTh3M00n!'
 
 
 class AddressBookTests(unittest.TestCase):

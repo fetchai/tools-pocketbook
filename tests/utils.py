@@ -3,6 +3,7 @@ import shutil
 import tempfile
 
 SAMPLE_ADDRESS = '2w9uqXLFvCve9TjfoRb2nuztuTx54E1S3AjuB9hWCMMGX5kp4W'
+SUPER_SECURE_PASSWORD = 'Fetch!Ai-ToTh3M00n!'
 
 
 class TemporaryPocketBookRoot:
