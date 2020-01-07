@@ -1,14 +1,15 @@
-import getpass
-
-from fetchai.ledger.crypto import Address
-from fetchai.ledger.serialisation.transaction import encode_transaction
-
-from pocketbook.address_book import AddressBook
-from pocketbook.key_store import KeyStore
-from pocketbook.utils import create_api
 
 
 def run_transfer(args):
+    from getpass import getpass
+
+    from fetchai.ledger.crypto import Address
+    from fetchai.ledger.serialisation.transaction import encode_transaction
+
+    from pocketbook.address_book import AddressBook
+    from pocketbook.key_store import KeyStore
+    from pocketbook.utils import create_api
+
     address_book = AddressBook()
     key_store = KeyStore()
 
@@ -53,7 +54,7 @@ def run_transfer(args):
     # start unsealing the private keys
     entities = {}
     for signer in args.signers:
-        entity = key_store.load_key(signer, getpass.getpass('Enter password for key {}: '.format(signer)))
+        entity = key_store.load_key(signer, getpass('Enter password for key {}: '.format(signer)))
         entities[signer] = entity
 
     from_address = None
