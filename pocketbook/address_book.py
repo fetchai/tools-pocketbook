@@ -1,4 +1,5 @@
 import os
+
 import toml
 
 from .constants import DEFAULT_KEY_STORE_ROOT
