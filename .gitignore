@@ -2,6 +2,8 @@
 .vscode/
 build/
 dist/
+Pipfile
+Pipfile.lock
 
 *.py[cgo]
 *.egg-info/
