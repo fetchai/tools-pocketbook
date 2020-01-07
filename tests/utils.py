@@ -1,3 +1,4 @@
+import os
 import shutil
 import tempfile
 
@@ -17,4 +18,5 @@ class TemporaryPocketBookRoot:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        shutil.rmtree(self._root)
+        if os.path.isdir(self._root):
+            shutil.rmtree(self._root)
