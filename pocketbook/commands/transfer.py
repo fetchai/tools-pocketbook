@@ -1,5 +1,3 @@
-
-
 def run_transfer(args):
     from getpass import getpass
 

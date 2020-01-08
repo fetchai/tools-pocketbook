@@ -1,15 +1,13 @@
 import argparse
 import sys
 
-from fetchai.ledger.crypto import Address
-
 from . import __version__
 from .commands.add import run_add
 from .commands.create import run_create
 from .commands.display import run_display
 from .commands.list import run_list
-from .commands.transfer import run_transfer
 from .commands.rename import run_rename
+from .commands.transfer import run_transfer
 from .disclaimer import display_disclaimer
 from .utils import NetworkUnavailableError, checked_address
 
@@ -53,7 +51,6 @@ def parse_commandline():
 
 
 def main():
-
     # run the specified command
     exit_code = 1
     try:

@@ -1,5 +1,3 @@
-
-
 def run_list(args):
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore

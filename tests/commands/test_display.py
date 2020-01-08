@@ -1,12 +1,12 @@
 import unittest
-from unittest.mock import patch, Mock
 from io import StringIO
-
-from pocketbook.key_store import KeyStore
-
-from tests.utils import SUPER_SECURE_PASSWORD
+from unittest.mock import patch, Mock
 
 from fetchai.ledger.crypto import Entity, Address
+
+from pocketbook.key_store import KeyStore
+from tests.utils import SUPER_SECURE_PASSWORD
+
 
 class DisplayCommandTests(unittest.TestCase):
 
