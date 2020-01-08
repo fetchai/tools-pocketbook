@@ -8,6 +8,7 @@ from .commands.display import run_display
 from .commands.list import run_list
 from .commands.rename import run_rename
 from .commands.transfer import run_transfer
+from .commands.delete import run_delete
 from .disclaimer import display_disclaimer
 from .utils import NetworkUnavailableError, checked_address
 
@@ -46,6 +47,10 @@ def parse_commandline():
     parser_rename.add_argument('old', help='The name of the old account name')
     parser_rename.add_argument('new', help='The new name of the account')
     parser_rename.set_defaults(handler=run_rename)
+
+    parser_delete = subparsers.add_parser('delete', aliases=['rm'])
+    parser_delete.add_argument('name', help='The name of the account to remove')
+    parser_delete.set_defaults(handler=run_delete)
 
     return parser, parser.parse_args()
 
