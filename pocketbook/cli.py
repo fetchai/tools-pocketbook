@@ -53,23 +53,23 @@ def parse_commandline():
 
 
 def main():
-    display_disclaimer()
-
-    # parse the command line
-    parser, args = parse_commandline()
-
-    # select the command handler
-    if hasattr(args, 'handler'):
-        handler = args.handler
-    else:
-        parser.print_usage()
-        handler = None
 
     # run the specified command
     exit_code = 1
-    if handler is not None:
-        try:
+    try:
+        display_disclaimer()
 
+        # parse the command line
+        parser, args = parse_commandline()
+
+        # select the command handler
+        if hasattr(args, 'handler'):
+            handler = args.handler
+        else:
+            parser.print_usage()
+            handler = None
+
+        if handler is not None:
             # execute the handler
             ret = handler(args)
 
@@ -79,11 +79,11 @@ def main():
             else:
                 exit_code = 0
 
-        except NetworkUnavailableError:
-            print('The network appears to be unavailable at the moment. Please try again later')
+    except NetworkUnavailableError:
+        print('The network appears to be unavailable at the moment. Please try again later')
 
-        except Exception as ex:
-            print('Error:', ex)
+    except Exception as ex:
+        print('Error:', ex)
 
     # close the program with the given exit code
     sys.exit(int(exit_code))
