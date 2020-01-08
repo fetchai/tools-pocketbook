@@ -1,9 +1,9 @@
 import os
-import fnmatch
-
-from fetchai.ledger.crypto import Entity, Address, Identity
 
 import toml
+from fetchai.ledger.crypto import Entity, Address
+
+from .constants import DEFAULT_KEY_STORE_ROOT
 
 
 class KeyStoreError(Exception):
@@ -26,14 +26,16 @@ class UnableToDecodeKeyError(KeyStoreError):
 
 
 class KeyStore:
-    KEY_STORE_ROOT = os.path.abspath(os.path.expanduser('~/.pocketbook'))
-    KEY_STORE_INDEX = os.path.join(KEY_STORE_ROOT, 'index.toml')
+    INDEX_FILE_NAME = 'index.toml'
 
-    def __init__(self):
-        os.makedirs(self.KEY_STORE_ROOT, exist_ok=True)
+    def __init__(self, root=None):
+        self._root = root or DEFAULT_KEY_STORE_ROOT
+        self._index_path = os.path.join(self._root, self.INDEX_FILE_NAME)
 
-        if os.path.exists(self.KEY_STORE_INDEX):
-            with open(self.KEY_STORE_INDEX, 'r') as index_file:
+        os.makedirs(self._root, exist_ok=True)
+
+        if os.path.exists(self._index_path):
+            with open(self._index_path, 'r') as index_file:
                 self._index = toml.load(index_file)
         else:
             self._index = {'key': []}
@@ -86,7 +88,7 @@ class KeyStore:
         self._flush_index()
 
     def _format_key_path(self, name: str):
-        return os.path.join(self.KEY_STORE_ROOT, '{}.key'.format(name))
+        return os.path.join(self._root, '{}.key'.format(name))
 
     def _lookup_meta_data(self, name: str):
         for item in self._index['key']:
@@ -94,5 +96,5 @@ class KeyStore:
                 return item
 
     def _flush_index(self):
-        with open(self.KEY_STORE_INDEX, 'w') as index_file:
+        with open(self._index_path, 'w') as index_file:
             toml.dump(self._index, index_file)

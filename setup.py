@@ -16,7 +16,7 @@ setup(
     ],
     extras_require={
         'dev': ['check-manifest'],
-        'test': ['coverage', 'pytest'],
+        'test': ['coverage', 'pytest', 'flake8'],
     },
     entry_points={
         'console_scripts': [
