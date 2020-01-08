@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 
 import toml
 from fetchai.ledger.crypto import Entity, Address
@@ -86,6 +87,35 @@ class KeyStore:
             'address': str(Address(entity)),
         })
         self._flush_index()
+
+    def rename_key(self, old_name: str, new_name: str) -> bool:
+
+        # do some basic checks
+        if old_name not in self.list_keys():
+            return False
+        if new_name in self.list_keys():
+            return False
+
+        # extract the old key metadata
+        old_metadata = self._lookup_meta_data(old_name)
+        if old_metadata is None:
+            return False
+
+        # move the key file
+        old_key_file_path = self._format_key_path(old_name)
+        new_key_file_path = self._format_key_path(new_name)
+        os.rename(old_key_file_path, new_key_file_path)
+
+        # remove the old entries to the metadata
+        self._index['key'] = list(filter(lambda x: x['name'] != old_name, self._index['key']))
+
+        # update and insert the new meta data into place
+        new_metadata = deepcopy(old_metadata)
+        new_metadata['name'] = new_name
+        self._index['key'].append(new_metadata)
+        self._flush_index()
+
+        return True
 
     def _format_key_path(self, name: str):
         return os.path.join(self._root, '{}.key'.format(name))
