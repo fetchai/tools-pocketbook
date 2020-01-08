@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock, MagicMock, PropertyMock
 
 from fetchai.ledger.crypto import Entity, Address
 from fetchai.ledger.serialisation.transaction import encode_transaction
@@ -41,6 +41,7 @@ class TransferCommandUnitTests(unittest.TestCase):
         mock_create_api.return_value = api
 
         tx = MagicMock()
+        tx.charge_rate = PropertyMock()
         api.tokens._create_skeleton_tx.return_value = tx
         api.tokens._post_tx_json.return_value = '0xTransactionHexId'
 
@@ -49,7 +50,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = None
         args.network = 'super-duper-net'
@@ -95,21 +97,14 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = None
         args.network = 'super-duper-net'
 
         from pocketbook.commands.transfer import run_transfer
         run_transfer(args)
-
-        # mock_create_api.assert_called_once_with('super-duper-net')
-        # key_store.load_key.assert_called_once_with(person1.name, 'weak-password')
-        # api.tokens._create_skeleton_tx.assert_called_once_with(1)  # single signature
-        # tx.add_transfer.assert_called_once_with(person2.address, 20000000000)
-        # mock_encode_transaction.assert_called_once_with(tx, [person1.entity])
-        # api.tokens._post_tx_json.assert_called_once_with(encoded_tx, 'transfer')
-        # api.sync.assert_called_once_with('0xTransactionHexId')
 
     @patch('getpass.getpass', side_effect=['weak-password'])
     @patch('builtins.input', return_value='')
@@ -141,7 +136,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = str(person2.address)
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = None
         args.network = 'super-duper-net'
@@ -189,7 +185,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = multisig.name
         args.network = 'super-duper-net'
@@ -229,7 +226,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = person2.name
         args.network = 'super-duper-net'
@@ -263,7 +261,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = [person1.name]
         args.from_address = 'some-one-missing'
         args.network = 'super-duper-net'
@@ -297,7 +296,8 @@ class TransferCommandUnitTests(unittest.TestCase):
 
         args = Mock()
         args.destination = person2.name
-        args.amount = 2
+        args.amount = 20000000000
+        args.charge_rate = 1
         args.signers = []
         args.from_address = 'some-one-missing'
         args.network = 'super-duper-net'
