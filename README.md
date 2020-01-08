@@ -59,6 +59,28 @@ The wallet also has an address book. You can add addresses with the following co
 pocketbook add <name-for-the-address> <address>
 ```
 
+## Renaming addresses
+
+If you don't like the name that you have given to a wallet, this can be changed with the following command:
+
+```
+pocketbook rename <bad-name> <new-name>
+```
+
+## Deleting addresses
+
+If you want to remove an address this can be done with the following command:
+
+```
+pocketbook delete <name>
+```
+
+Be very careful when running the command, because this is not revertable. It could potentially mean that you loose
+access to your funds.
+
+When deleting a private key, `pocketbook` will prompt you to enter the full address of the wallet that you want to
+delete as a security check.
+
 ## Making a transfer
 
 To make a transfer you would use the `transfer` command in the following form:
@@ -79,9 +101,11 @@ You would then be prompted with a summary of the transfer (before it happens) so
 ```
 Network....: devnet
 From.......: main
-Signers....: ['main']
-Destination: UAHCrmwEEmYBNFt8mJXZB6CiqJ2kZcGsR8tjj3f6GkZuR7YnR
-Amount.....: 10 FET
+Signers....: main
+Destination: other: UAHCrmwEEmYBNFt8mJXZB6CiqJ2kZcGsR8tjj3f6GkZuR7YnR
+Amount.....: 10.0000000000 FET
+Fee........: 0.0000000001 FET
+Total......: 10.0000000001 FET (Amount + Fee)
     
 Press enter to continue
 ```
@@ -100,3 +124,8 @@ blocks until the transaction has been included into the chain
 Submitting TX...
 Submitting TX...complete
 ```
+
+### Changing the charge rate
+
+By default `pocketbook` chooses the minimum possible fee to be paid, however, if you want to update this, then simply
+use the '--charge-rate' or '-R' flag to set the required charge rate
