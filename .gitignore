@@ -1,10 +1,17 @@
+# IDEs
 .idea/
 .vscode/
+
+# Build / Packaging
 build/
 dist/
+*.egg-info/
+
+# Environments
+.venv/
 Pipfile
 Pipfile.lock
 
+# Python
 *.py[cgo]
-*.egg-info/
 
