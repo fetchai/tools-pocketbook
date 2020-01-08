@@ -20,6 +20,24 @@ class AddressBook:
         self._address_book[name] = str(address)
         self._save()
 
+    def rename(self, old: str, new: str) -> bool:
+        """
+        Rename an address from one name to another
+
+        :param old: The old name for the address
+        :param new: The new name for the address
+        :return: True if successful, otherwise False
+        """
+        success = False
+
+        if old in self._address_book and new not in self._address_book:
+            self._address_book[new] = self._address_book[old]
+            del self._address_book[old]
+            self._save()
+            success = True
+
+        return success
+
     def keys(self):
         return self._address_book.keys()
 

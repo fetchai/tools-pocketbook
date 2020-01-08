@@ -9,6 +9,7 @@ from .commands.create import run_create
 from .commands.display import run_display
 from .commands.list import run_list
 from .commands.transfer import run_transfer
+from .commands.rename import run_rename
 from .disclaimer import display_disclaimer
 from .utils import NetworkUnavailableError
 
@@ -43,6 +44,11 @@ def parse_commandline():
     parser_transfer.add_argument('signers', nargs='+', help='The series of key names needed to sign the transaction')
     parser_transfer.set_defaults(handler=run_transfer)
 
+    parser_rename = subparsers.add_parser('rename', aliases=['mv'])
+    parser_rename.add_argument('old', help='The name of the old account name')
+    parser_rename.add_argument('new', help='The new name of the account')
+    parser_rename.set_defaults(handler=run_rename)
+
     return parser, parser.parse_args()
 
 
@@ -65,9 +71,13 @@ def main():
         try:
 
             # execute the handler
-            handler(args)
+            ret = handler(args)
 
-            exit_code = 0
+            # update the exit code based on the return value
+            if isinstance(ret, int):
+                exit_code = ret
+            else:
+                exit_code = 0
 
         except NetworkUnavailableError:
             print('The network appears to be unavailable at the moment. Please try again later')

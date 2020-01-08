@@ -77,3 +77,24 @@ class AddressBookTests(unittest.TestCase):
 
             address_book2 = AddressBook(root=ctx.root)
             self.assertEqual(set(address_book1.items()), set(address_book2.items()))
+
+    def test_rename(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book1 = AddressBook(root=ctx.root)
+            address_book1.add('sample', SAMPLE_ADDRESS)
+            self.assertTrue(address_book1.rename('sample', 'sample2'))
+            self.assertIn('sample2', address_book1.keys())
+            self.assertNotIn('sample', address_book1.keys())
+
+    def test_rename_occurs_on_disk(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book1 = AddressBook(root=ctx.root)
+            address_book1.add('sample', SAMPLE_ADDRESS)
+
+            self.assertTrue(address_book1.rename('sample', 'sample2'))
+            self.assertAddressIsPresentOnDisk('sample2', SAMPLE_ADDRESS, ctx)
+
+    def test_rename_fails(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book1 = AddressBook(root=ctx.root)
+            self.assertFalse(address_book1.rename('sample', 'sample2'))

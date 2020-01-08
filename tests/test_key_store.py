@@ -1,5 +1,6 @@
 import os
 import unittest
+from unittest.mock import patch
 
 import toml
 from fetchai.ledger.crypto import Entity, Address
@@ -8,8 +9,7 @@ from pocketbook.key_store import KeyStore, DuplicateKeyNameError, KeyNotFoundErr
 from .utils import TemporaryPocketBookRoot, SUPER_SECURE_PASSWORD
 
 
-
-class AddressBookTests(unittest.TestCase):
+class KeyStoreTests(unittest.TestCase):
     def assertFlushedToDisk(self, name: str, password: str, entity: Entity, ctx: TemporaryPocketBookRoot):
         self.assertTrue(os.path.isdir(ctx.root))
 
@@ -127,3 +127,48 @@ class AddressBookTests(unittest.TestCase):
     def test_unable_to_decode_key_error_message(self):
         error = UnableToDecodeKeyError()
         self.assertEqual(str(error), 'Unable to decode key from key store')
+
+    def test_rename(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity = Entity()
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
+
+            self.assertTrue(key_store.rename_key('sample', 'sample2'))
+            self.assertIn('sample2', key_store.list_keys())
+            self.assertNotIn('sample', key_store.list_keys())
+
+    def test_rename_is_persisted_to_disk(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity = Entity()
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
+
+            self.assertTrue(key_store.rename_key('sample', 'sample2'))
+            self.assertFlushedToDisk('sample2', SUPER_SECURE_PASSWORD, entity, ctx)
+
+    def test_rename_failure_doesnt_exist(self):
+        with TemporaryPocketBookRoot() as ctx:
+            key_store = KeyStore(root=ctx.root)
+            self.assertFalse(key_store.rename_key('sample', 'sample2'))
+
+    def test_rename_failure_already_exists(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity1 = Entity()
+            entity2 = Entity()
+
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample1', SUPER_SECURE_PASSWORD, entity1)
+            key_store.add_key('sample2', SUPER_SECURE_PASSWORD, entity2)
+
+            self.assertFalse(key_store.rename_key('sample1', 'sample2'))
+
+    def test_corrupted_metadata(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity1 = Entity()
+
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample1', SUPER_SECURE_PASSWORD, entity1)
+
+            with patch.object(key_store, '_lookup_meta_data', return_value=None):
+                self.assertFalse(key_store.rename_key('sample1', 'sample2'))
