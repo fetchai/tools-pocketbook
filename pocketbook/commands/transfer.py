@@ -6,7 +6,7 @@ def run_transfer(args):
 
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
-    from pocketbook.utils import create_api, to_canonical, from_canonical, token_amount
+    from pocketbook.utils import create_api, from_canonical, token_amount
 
     address_book = AddressBook()
     key_store = KeyStore()
@@ -23,6 +23,7 @@ def run_transfer(args):
 
     # convert the amount
     amount = args.amount
+    charge_rate = args.charge_rate
     computed_amount = from_canonical(amount)
 
     # check all the signers make sense
@@ -42,9 +43,11 @@ def run_transfer(args):
     else:
         raise RuntimeError('Unable to determine from account')
 
-    fee = len(args.signers)
+    required_ops = len(args.signers)
+    fee = required_ops * charge_rate
     computed_fee = from_canonical(fee)
     computed_total = computed_amount + computed_fee
+    computed_charge_rate = from_canonical(charge_rate)
 
     print('Network....:', args.network)
     print('From.......:', str(from_address_name))
@@ -52,6 +55,11 @@ def run_transfer(args):
     print('Destination:', destination_name, str(destination))
     print('Amount.....:', token_amount(computed_amount))
     print('Fee........:', token_amount(computed_fee))
+
+    # only display extended fee information if something other than the default it selected
+    if charge_rate != 1:
+        print('           : {} ops @ {}'.format(required_ops, token_amount(computed_charge_rate)))
+
     print('Total......:', token_amount(computed_total), '(Amount + Fee)')
     print()
     input('Press enter to continue')
@@ -71,7 +79,8 @@ def run_transfer(args):
         from_address = Address(address_book.lookup_address(from_address_name))
 
     # build up the basic transaction information
-    tx = api.tokens._create_skeleton_tx(fee)
+    tx = api.tokens._create_skeleton_tx(required_ops)
+    tx.charge_rate = charge_rate
     tx.from_address = Address(from_address)
     tx.add_transfer(destination, amount)
     for entity in entities.values():
