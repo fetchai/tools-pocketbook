@@ -19,14 +19,14 @@ def parse_commandline():
     parser.add_argument('-n', '--network', default='mainnet', help='The name of the target being addressed')
     subparsers = parser.add_subparsers()
 
-    parser_list = subparsers.add_parser('list', aliases=['ls'], help='Lists all the balances')
+    parser_list = subparsers.add_parser('list', aliases=['ls'], help='Lists all the balances and addresses')
     parser_list.add_argument('-v', '--verbose', action='store_true', help='Display extra information (if available)')
     parser_list.set_defaults(handler=run_list)
 
-    parser_create = subparsers.add_parser('create', aliases=['new'], help='Create a key key')
+    parser_create = subparsers.add_parser('create', aliases=['new'], help='Create a new key')
     parser_create.set_defaults(handler=run_create)
 
-    parser_display = subparsers.add_parser('display', help='Displays the address and public key for a private key')
+    parser_display = subparsers.add_parser('display', help='Displays the address and public key information for an address')
     parser_display.add_argument('name', help='The name of the key')
     parser_display.set_defaults(handler=run_display)
 
@@ -35,7 +35,7 @@ def parse_commandline():
     parser_add.add_argument('address', type=checked_address, help='The account address')
     parser_add.set_defaults(handler=run_add)
 
-    parser_transfer = subparsers.add_parser('transfer')
+    parser_transfer = subparsers.add_parser('transfer', help='Transfers funds between wallets')
     parser_transfer.add_argument('destination',
                                  help='The destination address either a name in the address book or an address')
     parser_transfer.add_argument('amount', type=to_canonical, help='The amount of FET to be transferred')
@@ -45,12 +45,12 @@ def parse_commandline():
     parser_transfer.add_argument('signers', nargs='+', help='The series of key names needed to sign the transaction')
     parser_transfer.set_defaults(handler=run_transfer)
 
-    parser_rename = subparsers.add_parser('rename', aliases=['mv'])
+    parser_rename = subparsers.add_parser('rename', aliases=['mv'], help='Renames and address or key to another name')
     parser_rename.add_argument('old', help='The name of the old account name')
     parser_rename.add_argument('new', help='The new name of the account')
     parser_rename.set_defaults(handler=run_rename)
 
-    parser_delete = subparsers.add_parser('delete', aliases=['rm'])
+    parser_delete = subparsers.add_parser('delete', aliases=['rm'], help='Deletes an address or key from the wallet')
     parser_delete.add_argument('name', help='The name of the account to remove')
     parser_delete.set_defaults(handler=run_delete)
 
