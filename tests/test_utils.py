@@ -1,16 +1,17 @@
 import unittest
 from unittest.mock import MagicMock, patch
+from typing import Union
 
 from fetchai.ledger.crypto import Address, Entity
 
-from pocketbook.utils import get_balance, get_stake, NetworkUnavailableError, checked_address
+from pocketbook.utils import get_balance, get_stake, NetworkUnavailableError, checked_address, to_canonical, from_canonical
 
 
 class UtilsTests(unittest.TestCase):
 
     def test_get_balance(self):
         api = MagicMock()
-        api.tokens.balance.return_value = 100000000000
+        api.tokens.balance.return_value = to_canonical(10)
 
         balance = get_balance(api, 'some address')
         self.assertEqual(balance, 10)
@@ -19,7 +20,7 @@ class UtilsTests(unittest.TestCase):
 
     def test_get_stake(self):
         api = MagicMock()
-        api.tokens.stake.return_value = 50000000000
+        api.tokens.stake.return_value = to_canonical(5)
 
         stake = get_stake(api, 'some address')
         self.assertEqual(stake, 5)
@@ -57,3 +58,24 @@ class UtilsTests(unittest.TestCase):
             checked_address('foo-bar-baz')
         self.assertEqual(str(ctx.exception),
                          'Unable to convert foo-bar-baz into and address. The address needs to be a base58 encoded value')
+
+
+class FetConversionTests(unittest.TestCase):
+    def assertIsConvertible(self, canonical: int, value: Union[int, float]):
+        converted_canonical = to_canonical(value)
+        self.assertEqual(canonical, converted_canonical)
+        self.assertEqual(float(value), from_canonical(converted_canonical))
+
+    def test_canonical_conversions(self):
+        self.assertIsConvertible(10000000000, 1)
+        self.assertIsConvertible(10000000000, 1.0)
+        self.assertIsConvertible(12000000000, 1.2)
+        self.assertIsConvertible(10020000000, 1.002)
+        self.assertIsConvertible(1, 1e-10)
+        self.assertIsConvertible(100, 1e-8)
+        self.assertIsConvertible(10000000, 1e-3)
+        self.assertIsConvertible(10000, 1e-6)
+        self.assertIsConvertible(10, 1e-9)
+        self.assertIsConvertible(10000000000000, 1e3)
+        self.assertIsConvertible(10000000000000000, 1e6)
+        self.assertIsConvertible(10000000000000000000, 1e9)
