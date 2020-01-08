@@ -1,12 +1,12 @@
 import unittest
 from unittest.mock import patch, Mock, MagicMock
 
+from fetchai.ledger.crypto import Entity, Address
+from fetchai.ledger.serialisation.transaction import encode_transaction
+
 from pocketbook.address_book import AddressBook
 from pocketbook.key_store import KeyStore
 from pocketbook.utils import create_api
-
-from fetchai.ledger.crypto import Entity, Address
-from fetchai.ledger.serialisation.transaction import encode_transaction
 
 
 class Person:
@@ -24,7 +24,8 @@ class TransferCommandUnitTests(unittest.TestCase):
     @patch('pocketbook.utils.create_api', spec=create_api)
     @patch('pocketbook.address_book.AddressBook', spec=AddressBook)
     @patch('pocketbook.key_store.KeyStore', spec=KeyStore)
-    def test_transfer_to_addr_dest(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction, *args):
+    def test_transfer_to_addr_dest(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction,
+                                   *args):
         person1 = Person('Jane')
         person2 = Person('Clare')
 
@@ -206,14 +207,14 @@ class TransferCommandUnitTests(unittest.TestCase):
         api.tokens._post_tx_json.assert_called_once_with(encoded_tx, 'transfer')
         api.sync.assert_called_once_with('0xTransactionHexId')
 
-
     @patch('getpass.getpass', side_effect=['weak-password'])
     @patch('builtins.input', return_value='')
     @patch('fetchai.ledger.serialisation.transaction.encode_transaction', spec=encode_transaction)
     @patch('pocketbook.utils.create_api', spec=create_api)
     @patch('pocketbook.address_book.AddressBook', spec=AddressBook)
     @patch('pocketbook.key_store.KeyStore', spec=KeyStore)
-    def test_error_when_signer_not_present(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction, *args):
+    def test_error_when_signer_not_present(self, MockKeyStore, MockAddressBook, mock_create_api,
+                                           mock_encode_transaction, *args):
         person1 = Person('Jane')
         person2 = Person('Clare')
 
@@ -240,14 +241,14 @@ class TransferCommandUnitTests(unittest.TestCase):
         # mock_create_api.assert_called_once_with('super-duper-net')
         address_book.lookup_address.assert_called_once_with(person2.name)
 
-
     @patch('getpass.getpass', side_effect=['weak-password'])
     @patch('builtins.input', return_value='')
     @patch('fetchai.ledger.serialisation.transaction.encode_transaction', spec=encode_transaction)
     @patch('pocketbook.utils.create_api', spec=create_api)
     @patch('pocketbook.address_book.AddressBook', spec=AddressBook)
     @patch('pocketbook.key_store.KeyStore', spec=KeyStore)
-    def test_error_when_from_field_is_invalid(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction, *args):
+    def test_error_when_from_field_is_invalid(self, MockKeyStore, MockAddressBook, mock_create_api,
+                                              mock_encode_transaction, *args):
         person1 = Person('Jane')
         person2 = Person('Clare')
 
@@ -280,7 +281,8 @@ class TransferCommandUnitTests(unittest.TestCase):
     @patch('pocketbook.utils.create_api', spec=create_api)
     @patch('pocketbook.address_book.AddressBook', spec=AddressBook)
     @patch('pocketbook.key_store.KeyStore', spec=KeyStore)
-    def test_error_case_with_bad_args(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction, *args):
+    def test_error_case_with_bad_args(self, MockKeyStore, MockAddressBook, mock_create_api, mock_encode_transaction,
+                                      *args):
         person1 = Person('Jane')
         person2 = Person('Clare')
 

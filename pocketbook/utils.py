@@ -30,5 +30,5 @@ def checked_address(address):
     try:
         return Address(address)
     except:
-        raise RuntimeError('Unable to convert {} into and address. The address needs to be a base58 encoded value'.format(address))
-
+        raise RuntimeError(
+            'Unable to convert {} into and address. The address needs to be a base58 encoded value'.format(address))

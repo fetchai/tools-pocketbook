@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import patch
 from io import StringIO
-
-from tests.utils import SUPER_SECURE_PASSWORD
+from unittest.mock import patch
 
 from fetchai.ledger.crypto import Entity
+
 from pocketbook.key_store import KeyStore
+from tests.utils import SUPER_SECURE_PASSWORD
 
 
 class CreateCommandTests(unittest.TestCase):
@@ -74,6 +74,3 @@ class CreateCommandTests(unittest.TestCase):
         key_store.add_key.assert_called_once_with('foo-baz', SUPER_SECURE_PASSWORD, entity)
 
         self.assertIn('Key name already exists', output.getvalue())
-
-
-

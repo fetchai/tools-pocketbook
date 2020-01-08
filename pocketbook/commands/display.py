@@ -1,4 +1,3 @@
-
 def run_display(args):
     from getpass import getpass
     from fetchai.ledger.crypto import Address
