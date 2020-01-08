@@ -1,10 +1,11 @@
 import unittest
-from unittest.mock import MagicMock, patch
 from typing import Union
+from unittest.mock import MagicMock, patch
 
 from fetchai.ledger.crypto import Address, Entity
 
-from pocketbook.utils import get_balance, get_stake, NetworkUnavailableError, checked_address, to_canonical, from_canonical
+from pocketbook.utils import get_balance, get_stake, NetworkUnavailableError, checked_address, to_canonical, \
+    from_canonical, token_amount
 
 
 class UtilsTests(unittest.TestCase):
@@ -79,3 +80,17 @@ class FetConversionTests(unittest.TestCase):
         self.assertIsConvertible(10000000000000, 1e3)
         self.assertIsConvertible(10000000000000000, 1e6)
         self.assertIsConvertible(10000000000000000000, 1e9)
+
+    def test_token_amount_formatting(self):
+        self.assertEqual(token_amount(1), '1.0000000000 FET')
+        self.assertEqual(token_amount(1.0), '1.0000000000 FET')
+        self.assertEqual(token_amount(1.2), '1.2000000000 FET')
+        self.assertEqual(token_amount(1.002), '1.0020000000 FET')
+        self.assertEqual(token_amount(1e-10), '0.0000000001 FET')
+        self.assertEqual(token_amount(1e-8), '0.0000000100 FET')
+        self.assertEqual(token_amount(1e-3), '0.0010000000 FET')
+        self.assertEqual(token_amount(1e-6), '0.0000010000 FET')
+        self.assertEqual(token_amount(1e-9), '0.0000000010 FET')
+        self.assertEqual(token_amount(1e3), '1000.0000000000 FET')
+        self.assertEqual(token_amount(1e6), '1000000.0000000000 FET')
+        self.assertEqual(token_amount(1e9), '1000000000.0000000000 FET')

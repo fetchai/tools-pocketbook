@@ -6,21 +6,24 @@ def run_transfer(args):
 
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
-    from pocketbook.utils import create_api
+    from pocketbook.utils import create_api, to_canonical, from_canonical, token_amount
 
     address_book = AddressBook()
     key_store = KeyStore()
 
     # choose the destination
+    destination_name = '{}:'.format(args.destination)
     if args.destination in address_book.keys():
         destination = address_book.lookup_address(args.destination)
     else:
         destination = key_store.lookup_address(args.destination)
         if destination is None:
             destination = Address(args.destination)
+            destination_name = ''
 
-    # change the amount
-    amount = args.amount * 10000000000
+    # convert the amount
+    amount = to_canonical(args.amount)
+    computed_amount = from_canonical(amount)
 
     # check all the signers make sense
     for signer in args.signers:
@@ -39,11 +42,17 @@ def run_transfer(args):
     else:
         raise RuntimeError('Unable to determine from account')
 
+    fee = len(args.signers)
+    computed_fee = from_canonical(fee)
+    computed_total = computed_amount + computed_fee
+
     print('Network....:', args.network)
     print('From.......:', str(from_address_name))
-    print('Signers....:', args.signers)
-    print('Destination:', str(destination))
-    print('Amount.....:', args.amount, 'FET')
+    print('Signer(s)..:', ','.join(args.signers))
+    print('Destination:', destination_name, str(destination))
+    print('Amount.....:', token_amount(computed_amount))
+    print('Fee........:', token_amount(computed_fee))
+    print('Total......:', token_amount(computed_total), '(Amount + Fee)')
     print()
     input('Press enter to continue')
 
@@ -62,7 +71,7 @@ def run_transfer(args):
         from_address = Address(address_book.lookup_address(from_address_name))
 
     # build up the basic transaction information
-    tx = api.tokens._create_skeleton_tx(len(entities.values()))
+    tx = api.tokens._create_skeleton_tx(fee)
     tx.from_address = Address(from_address)
     tx.add_transfer(destination, amount)
     for entity in entities.values():

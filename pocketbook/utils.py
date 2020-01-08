@@ -17,6 +17,15 @@ def from_canonical(value: int) -> float:
     return value / int(CANONICAL_FET_UNIT)
 
 
+def token_amount(value: float) -> str:
+    """
+    Converts a token amount into a fixed precision string value
+    :param value: The input value to display
+    :return: The converted value
+    """
+    return '{:6.10f} FET'.format(float(value))
+
+
 def get_balance(api, address):
     balance = int(api.tokens.balance(address))
     return from_canonical(balance)
