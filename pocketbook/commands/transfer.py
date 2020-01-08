@@ -22,7 +22,7 @@ def run_transfer(args):
             destination_name = ''
 
     # convert the amount
-    amount = to_canonical(args.amount)
+    amount = args.amount
     computed_amount = from_canonical(amount)
 
     # check all the signers make sense

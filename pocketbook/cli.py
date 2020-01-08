@@ -10,7 +10,7 @@ from .commands.rename import run_rename
 from .commands.transfer import run_transfer
 from .commands.delete import run_delete
 from .disclaimer import display_disclaimer
-from .utils import NetworkUnavailableError, checked_address
+from .utils import NetworkUnavailableError, checked_address, to_canonical
 
 
 def parse_commandline():
@@ -38,7 +38,7 @@ def parse_commandline():
     parser_transfer = subparsers.add_parser('transfer')
     parser_transfer.add_argument('destination',
                                  help='The destination address either a name in the address book or an address')
-    parser_transfer.add_argument('amount', type=int, help='The amount in whole FET to be transferred')
+    parser_transfer.add_argument('amount', type=to_canonical, help='The amount of FET to be transferred')
     parser_transfer.add_argument('--from', dest='from_address', help='The signing account, required for multi-sig')
     parser_transfer.add_argument('signers', nargs='+', help='The series of key names needed to sign the transaction')
     parser_transfer.set_defaults(handler=run_transfer)
