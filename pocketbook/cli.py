@@ -11,7 +11,7 @@ from .commands.list import run_list
 from .commands.transfer import run_transfer
 from .commands.rename import run_rename
 from .disclaimer import display_disclaimer
-from .utils import NetworkUnavailableError
+from .utils import NetworkUnavailableError, checked_address
 
 
 def parse_commandline():
@@ -33,7 +33,7 @@ def parse_commandline():
 
     parser_add = subparsers.add_parser('add', help='Adds an address to the address book')
     parser_add.add_argument('name', help='The name of the key')
-    parser_add.add_argument('address', type=Address, help='The account address')
+    parser_add.add_argument('address', type=checked_address, help='The account address')
     parser_add.set_defaults(handler=run_add)
 
     parser_transfer = subparsers.add_parser('transfer')
