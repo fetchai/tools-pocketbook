@@ -81,6 +81,9 @@ def main():
             else:
                 exit_code = 0
 
+    except KeyboardInterrupt:
+        print('Stopped!')
+
     except NetworkUnavailableError:
         print('The network appears to be unavailable at the moment. Please try again later')
 
