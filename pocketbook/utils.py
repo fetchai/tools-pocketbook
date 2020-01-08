@@ -1,3 +1,4 @@
+from fetchai.ledger.crypto import Address
 
 
 class NetworkUnavailableError(Exception):
@@ -23,3 +24,11 @@ def create_api(name: str):
         pass
 
     raise NetworkUnavailableError()
+
+
+def checked_address(address):
+    try:
+        return Address(address)
+    except:
+        raise RuntimeError('Unable to convert {} into and address. The address needs to be a base58 encoded value'.format(address))
+
