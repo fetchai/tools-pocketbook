@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from fetchai.ledger.crypto import Address, Entity
 
 from pocketbook.utils import get_balance, get_stake, NetworkUnavailableError, checked_address, to_canonical, \
-    from_canonical, token_amount
+    from_canonical, token_amount, ConversionError
 
 
 class UtilsTests(unittest.TestCase):
@@ -94,3 +94,19 @@ class FetConversionTests(unittest.TestCase):
         self.assertEqual(token_amount(1e3), '1000.0000000000 FET')
         self.assertEqual(token_amount(1e6), '1000000.0000000000 FET')
         self.assertEqual(token_amount(1e9), '1000000000.0000000000 FET')
+
+    def test_invalid_negative_to_canonical(self):
+        with self.assertRaises(ConversionError):
+            to_canonical(-10)
+
+    def test_invalid_too_small_to_canonical(self):
+        with self.assertRaises(ConversionError):
+            to_canonical(1e-20)
+
+    def test_invalid_non_number_to_canonical(self):
+        with self.assertRaises(ValueError):
+            to_canonical('foo-bar')
+
+    def test_invalid_negative_from_canonical(self):
+        with self.assertRaises(ConversionError):
+            from_canonical(-10)

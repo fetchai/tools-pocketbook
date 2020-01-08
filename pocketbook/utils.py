@@ -3,17 +3,34 @@ from typing import Union
 from fetchai.ledger.crypto import Address
 
 CANONICAL_FET_UNIT = 1e10
+MINIMUM_FRACTIONAL_FET = 1 / CANONICAL_FET_UNIT
 
 
 class NetworkUnavailableError(Exception):
     pass
 
 
+class ConversionError(RuntimeError):
+    def __init__(self, msg):
+        super().__init__(msg)
+
+
 def to_canonical(value: Union[float, int]) -> int:
+    value = float(value)
+    if value < 0:
+        raise ConversionError('Unable to convert negative token amount: {}'.format(value))
+    if value < MINIMUM_FRACTIONAL_FET:
+        raise ConversionError(
+            'Converted value {} is below minimum fractional value: {}'.format(value, MINIMUM_FRACTIONAL_FET))
+
     return int(value * CANONICAL_FET_UNIT)
 
 
 def from_canonical(value: int) -> float:
+    value = int(value)
+    if value < 0:
+        raise ConversionError('Unable to convert negative token amount: {}'.format(value))
+
     return value / int(CANONICAL_FET_UNIT)
 
 
