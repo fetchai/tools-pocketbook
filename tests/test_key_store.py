@@ -9,8 +9,24 @@ from pocketbook.key_store import KeyStore, DuplicateKeyNameError, KeyNotFoundErr
 from .utils import TemporaryPocketBookRoot, SUPER_SECURE_PASSWORD
 
 
-class KeyStoreTests(unittest.TestCase):
-    def assertFlushedToDisk(self, name: str, password: str, entity: Entity, ctx: TemporaryPocketBookRoot):
+class KeyStoreTestCase(unittest.TestCase):
+    def assertKeyIsNotPresentOnDisk(self, name: str, ctx: TemporaryPocketBookRoot):
+        self.assertTrue(os.path.isdir(ctx.root))
+
+        # check the index record
+        index_path = os.path.join(ctx.root, KeyStore.INDEX_FILE_NAME)
+        self.assertTrue(os.path.isfile(index_path))
+        with open(index_path, 'r') as index_file:
+            index = toml.load(index_path)
+
+            # build up the key listings
+            key_addresses = {key['name']: key['address'] for key in index.get('key', [])}
+            self.assertNotIn(name, key_addresses)
+
+        key_path = os.path.join(ctx.root, '{}.key'.format(name))
+        self.assertFalse(os.path.isfile(key_path))
+
+    def assertKeyIsPresentOnDisk(self, name: str, password: str, entity: Entity, ctx: TemporaryPocketBookRoot):
         self.assertTrue(os.path.isdir(ctx.root))
 
         # check that the index record has been created correctly
@@ -36,6 +52,9 @@ class KeyStoreTests(unittest.TestCase):
             recovered = Entity.load(key_file, password)
             self.assertEqual(recovered.private_key, entity.private_key)
 
+
+class KeyStoreTests(KeyStoreTestCase):
+
     def test_init(self):
         with TemporaryPocketBookRoot() as ctx:
             key_store = KeyStore(root=ctx.root)
@@ -60,7 +79,7 @@ class KeyStoreTests(unittest.TestCase):
             key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
 
             # check the files on have been set correctly
-            self.assertFlushedToDisk('sample', SUPER_SECURE_PASSWORD, entity, ctx)
+            self.assertKeyIsPresentOnDisk('sample', SUPER_SECURE_PASSWORD, entity, ctx)
 
     def test_address_lookup(self):
         with TemporaryPocketBookRoot() as ctx:
@@ -145,7 +164,7 @@ class KeyStoreTests(unittest.TestCase):
             key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
 
             self.assertTrue(key_store.rename_key('sample', 'sample2'))
-            self.assertFlushedToDisk('sample2', SUPER_SECURE_PASSWORD, entity, ctx)
+            self.assertKeyIsPresentOnDisk('sample2', SUPER_SECURE_PASSWORD, entity, ctx)
 
     def test_rename_failure_doesnt_exist(self):
         with TemporaryPocketBookRoot() as ctx:
@@ -172,3 +191,43 @@ class KeyStoreTests(unittest.TestCase):
 
             with patch.object(key_store, '_lookup_meta_data', return_value=None):
                 self.assertFalse(key_store.rename_key('sample1', 'sample2'))
+
+    def test_remove_failed(self):
+        with TemporaryPocketBookRoot() as ctx:
+            key_store = KeyStore(root=ctx.root)
+            self.assertFalse(key_store.remove_key('sample'))
+
+    def test_remove(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity = Entity()
+
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
+
+            self.assertTrue(key_store.remove_key('sample'))
+            self.assertNotIn('sample', key_store.list_keys())
+
+    def test_remove_reflected_on_disk(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity = Entity()
+
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
+
+            self.assertTrue(key_store.remove_key('sample'))
+            self.assertKeyIsNotPresentOnDisk('sample', ctx)
+
+    def test_remove_with_corrupted_files(self):
+        with TemporaryPocketBookRoot() as ctx:
+            entity = Entity()
+
+            key_store = KeyStore(root=ctx.root)
+            key_store.add_key('sample', SUPER_SECURE_PASSWORD, entity)
+
+            # corrupt the files
+            key_path = key_store._format_key_path('sample')
+            self.assertTrue(os.path.isfile(key_path))
+            os.remove(key_path)
+
+            with self.assertRaises(RuntimeError):
+                key_store.remove_key('sample')
