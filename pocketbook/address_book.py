@@ -38,6 +38,20 @@ class AddressBook:
 
         return success
 
+    def remove(self, name: str) -> bool:
+        """
+        Remove an address from the address book
+
+        :param name: The name of the address to remove
+        :return: True if successful, otherwise False
+        """
+        success = False
+        if name in self._address_book:
+            del self._address_book[name]
+            self._save()
+            success = True
+        return success
+
     def keys(self):
         return self._address_book.keys()
 

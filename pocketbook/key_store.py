@@ -107,7 +107,7 @@ class KeyStore:
         os.rename(old_key_file_path, new_key_file_path)
 
         # remove the old entries to the metadata
-        self._index['key'] = list(filter(lambda x: x['name'] != old_name, self._index['key']))
+        self._remove_key_from_index(old_name)
 
         # update and insert the new meta data into place
         new_metadata = deepcopy(old_metadata)
@@ -116,6 +116,25 @@ class KeyStore:
         self._flush_index()
 
         return True
+
+    def remove_key(self, name: str) -> bool:
+        if name not in self.list_keys():
+            return False
+
+        # remove the key path from the disk
+        key_file_path = self._format_key_path(name)
+        if not os.path.exists(key_file_path):
+            raise RuntimeError('Key not present on disk, unable to remove')
+        os.remove(key_file_path)
+
+        # update the index
+        self._remove_key_from_index(name)
+        self._flush_index()
+
+        return True
+
+    def _remove_key_from_index(self, name: str):
+        self._index['key'] = list(filter(lambda x: x['name'] != name, self._index['key']))
 
     def _format_key_path(self, name: str):
         return os.path.join(self._root, '{}.key'.format(name))

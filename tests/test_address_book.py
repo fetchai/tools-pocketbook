@@ -8,6 +8,12 @@ from .utils import TemporaryPocketBookRoot, SAMPLE_ADDRESS
 
 
 class AddressBookTests(unittest.TestCase):
+    def assertAddressIsNotPresentOnDisk(self, name: str, ctx: TemporaryPocketBookRoot):
+        address_index_path = os.path.join(ctx.root, AddressBook.INDEX_FILE_NAME)
+        if os.path.isfile(address_index_path):
+            with open(address_index_path, 'r') as address_index_file:
+                address_index = toml.load(address_index_file)
+                self.assertNotIn(name, address_index)
 
     def assertAddressIsPresentOnDisk(self, name: str, address: str, ctx: TemporaryPocketBookRoot):
         address_index_path = os.path.join(ctx.root, AddressBook.INDEX_FILE_NAME)
@@ -92,9 +98,31 @@ class AddressBookTests(unittest.TestCase):
             address_book1.add('sample', SAMPLE_ADDRESS)
 
             self.assertTrue(address_book1.rename('sample', 'sample2'))
+            self.assertAddressIsNotPresentOnDisk('sample', ctx)
             self.assertAddressIsPresentOnDisk('sample2', SAMPLE_ADDRESS, ctx)
 
     def test_rename_fails(self):
         with TemporaryPocketBookRoot() as ctx:
             address_book1 = AddressBook(root=ctx.root)
             self.assertFalse(address_book1.rename('sample', 'sample2'))
+
+    def test_remove(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book = AddressBook(root=ctx.root)
+            address_book.add('sample', SAMPLE_ADDRESS)
+            self.assertTrue(address_book.remove('sample'))
+
+            self.assertNotIn('sample', address_book.keys())
+
+    def test_remove_is_stored_on_disk(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book = AddressBook(root=ctx.root)
+            address_book.add('sample', SAMPLE_ADDRESS)
+            self.assertTrue(address_book.remove('sample'))
+
+            self.assertAddressIsNotPresentOnDisk('sample', ctx)
+
+    def test_removed_failed(self):
+        with TemporaryPocketBookRoot() as ctx:
+            address_book = AddressBook(root=ctx.root)
+            self.assertFalse(address_book.remove('sample'))
