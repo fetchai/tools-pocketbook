@@ -21,7 +21,7 @@ def to_canonical(value: Union[float, int]) -> int:
         raise ConversionError('Unable to convert negative token amount: {}'.format(value))
     if value < MINIMUM_FRACTIONAL_FET:
         raise ConversionError(
-            'Converted value {} is below minimum fractional value: {}'.format(value, MINIMUM_FRACTIONAL_FET))
+            'Converted value {} is below minimum transfer value: {}'.format(value, MINIMUM_FRACTIONAL_FET))
 
     return int(value * CANONICAL_FET_UNIT)
 
