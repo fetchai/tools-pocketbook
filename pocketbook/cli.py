@@ -5,7 +5,6 @@ from . import __version__
 from .commands.add import run_add
 from .commands.create import run_create
 from .commands.delete import run_delete
-from .commands.display import run_display
 from .commands.list import run_list
 from .commands.rename import run_rename
 from .commands.transfer import run_transfer
@@ -21,14 +20,11 @@ def parse_commandline():
 
     parser_list = subparsers.add_parser('list', aliases=['ls'], help='Lists all the balances and addresses')
     parser_list.add_argument('-v', '--verbose', action='store_true', help='Display extra information (if available)')
+    parser_list.add_argument('pattern', nargs='*', default=['*'])
     parser_list.set_defaults(handler=run_list)
 
     parser_create = subparsers.add_parser('create', aliases=['new'], help='Create a new key')
     parser_create.set_defaults(handler=run_create)
-
-    parser_display = subparsers.add_parser('display', help='Displays the address and public key information for an address')
-    parser_display.add_argument('name', help='The name of the key')
-    parser_display.set_defaults(handler=run_display)
 
     parser_add = subparsers.add_parser('add', help='Adds an address to the address book')
     parser_add.add_argument('name', help='The name of the key')

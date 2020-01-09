@@ -48,6 +48,7 @@ class ListCommandTests(unittest.TestCase):
         args = Mock()
         args.verbose = False
         args.network = 'bar-net'
+        args.pattern = ['*']
 
         table = MockTable()
         MockTable.reset_mock()
@@ -95,6 +96,7 @@ class ListCommandTests(unittest.TestCase):
         args = Mock()
         args.verbose = True
         args.network = 'bar-net'
+        args.pattern = ['*']
 
         table = MockTable()
         MockTable.reset_mock()
