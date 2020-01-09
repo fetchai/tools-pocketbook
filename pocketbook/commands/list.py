@@ -1,3 +1,10 @@
+from fnmatch import fnmatch
+
+
+def _should_display(item, patterns):
+    return any([fnmatch(item, p) for p in patterns])
+
+
 def run_list(args):
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
@@ -21,6 +28,9 @@ def run_list(args):
 
         table = Table(cols)
         for key in keys:
+            if not _should_display(key, args.pattern):
+                continue
+
             address = key_store.lookup_address(key)
             balance = get_balance(api, address)
             stake = get_stake(api, address)
@@ -36,6 +46,9 @@ def run_list(args):
             table.add_row(**row_data)
 
         for name, address in address_book.items():
+            if not _should_display(name, args.pattern):
+                continue
+
             balance = get_balance(api, address)
             stake = get_stake(api, address)
 

@@ -20,6 +20,7 @@ def parse_commandline():
 
     parser_list = subparsers.add_parser('list', aliases=['ls'], help='Lists all the balances and addresses')
     parser_list.add_argument('-v', '--verbose', action='store_true', help='Display extra information (if available)')
+    parser_list.add_argument('pattern', nargs='*', default=['*'])
     parser_list.set_defaults(handler=run_list)
 
     parser_create = subparsers.add_parser('create', aliases=['new'], help='Create a new key')
