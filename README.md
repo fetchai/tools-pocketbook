@@ -132,4 +132,4 @@ Submitting TX...complete
 ### Changing the charge rate
 
 By default `pocketbook` chooses the minimum possible fee to be paid, however, if you want to update this, then simply
-use the '--charge-rate' or '-R' flag to set the required charge rate
+use the `--charge-rate` or `-R` flag to set the required charge rate
