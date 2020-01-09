@@ -1,5 +1,8 @@
 # PocketBook
 ![](https://github.com/fetchai/tools-pocketbook/workflows/CI/badge.svg)
+![](https://img.shields.io/pypi/v/pocketbook)
+![](https://img.shields.io/github/release-date/fetchai/tools-pocketbook)
+![](https://img.shields.io/pypi/pyversions/pocketbook)
 
 PocketBook is a simple command line wallet that is intended to be used for test purposes on the Fetch.ai networks.
 
