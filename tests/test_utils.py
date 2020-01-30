@@ -37,6 +37,16 @@ class UtilsTests(unittest.TestCase):
         MockLedgerApi.assert_called_once_with(network='super-duper-net')
         MockLedgerApi.reset_mock()
 
+    @patch('fetchai.ledger.api.LedgerApi')
+    def test_create_api_local(self, MockLedgerApi):
+        # normal use
+        from pocketbook.utils import create_api
+        create_api('local')
+
+        MockLedgerApi.assert_called_once_with('127.0.0.1', 8000)
+        MockLedgerApi.reset_mock()
+
+
     @patch('fetchai.ledger.api.LedgerApi', side_effect=[RuntimeError('Bad Error')])
     def test_error_on_create_api(self, MockLedgerApi):
         # internal error case

@@ -98,7 +98,7 @@ class TransferCommandUnitTests(unittest.TestCase):
         args = Mock()
         args.destination = person2.name
         args.amount = 20000000000
-        args.charge_rate = 1
+        args.charge_rate = 2
         args.signers = [person1.name]
         args.from_address = None
         args.network = 'super-duper-net'
