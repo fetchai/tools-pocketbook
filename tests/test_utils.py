@@ -92,17 +92,17 @@ class FetConversionTests(unittest.TestCase):
         self.assertIsConvertible(10000000000000000000, 1e9)
 
     def test_token_amount_formatting(self):
-        self.assertEqual(token_amount(1), '1.0000000000 FET')
-        self.assertEqual(token_amount(1.0), '1.0000000000 FET')
-        self.assertEqual(token_amount(1.2), '1.2000000000 FET')
-        self.assertEqual(token_amount(1.002), '1.0020000000 FET')
-        self.assertEqual(token_amount(1e-10), '0.0000000001 FET')
-        self.assertEqual(token_amount(1e-8), '0.0000000100 FET')
-        self.assertEqual(token_amount(1e-3), '0.0010000000 FET')
-        self.assertEqual(token_amount(1e-6), '0.0000010000 FET')
-        self.assertEqual(token_amount(1e-9), '0.0000000010 FET')
-        self.assertEqual(token_amount(1e3), '1000.0000000000 FET')
-        self.assertEqual(token_amount(1e6), '1000000.0000000000 FET')
+        self.assertEqual(token_amount(1), '         1.0000000000 FET')
+        self.assertEqual(token_amount(1.0), '         1.0000000000 FET')
+        self.assertEqual(token_amount(1.2), '         1.2000000000 FET')
+        self.assertEqual(token_amount(1.002), '         1.0020000000 FET')
+        self.assertEqual(token_amount(1e-10), '         0.0000000001 FET')
+        self.assertEqual(token_amount(1e-8), '         0.0000000100 FET')
+        self.assertEqual(token_amount(1e-3), '         0.0010000000 FET')
+        self.assertEqual(token_amount(1e-6), '         0.0000010000 FET')
+        self.assertEqual(token_amount(1e-9), '         0.0000000010 FET')
+        self.assertEqual(token_amount(1e3), '      1000.0000000000 FET')
+        self.assertEqual(token_amount(1e6), '   1000000.0000000000 FET')
         self.assertEqual(token_amount(1e9), '1000000000.0000000000 FET')
 
     def test_invalid_negative_to_canonical(self):
