@@ -4,6 +4,7 @@ from fetchai.ledger.crypto import Address
 
 CANONICAL_FET_UNIT = 1e10
 MINIMUM_FRACTIONAL_FET = 1 / CANONICAL_FET_UNIT
+MAX_TOKEN_PADDING = 10
 
 
 class NetworkUnavailableError(Exception):
@@ -40,7 +41,8 @@ def token_amount(value: float) -> str:
     :param value: The input value to display
     :return: The converted value
     """
-    return '{:6.10f} FET'.format(float(value))
+    padding = ' ' * (MAX_TOKEN_PADDING - min(len(str(int(value))), MAX_TOKEN_PADDING))
+    return '{}{:10.10f} FET'.format(padding, float(value))
 
 
 def get_balance(api, address):
@@ -57,7 +59,10 @@ def create_api(name: str):
     from fetchai.ledger.api import LedgerApi
 
     try:
-        return LedgerApi(network=name)
+        if name == 'local':
+            return LedgerApi('127.0.0.1', 8000)
+        else:
+            return LedgerApi(network=name)
     except:
         pass
 
