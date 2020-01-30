@@ -5,7 +5,7 @@ from unittest.mock import patch, Mock, call
 from pocketbook.address_book import AddressBook
 from pocketbook.key_store import KeyStore
 from pocketbook.table import Table
-from pocketbook.utils import create_api, get_balance, get_stake
+from pocketbook.utils import create_api, get_balance, get_stake, token_amount
 from tests.utils import SAMPLE_ADDRESS
 
 
@@ -66,8 +66,8 @@ class ListCommandTests(unittest.TestCase):
 
         # check that we call the correct number of calls
         expected_row_calls = [
-            call(name='sample', type='key', balance=10, stake=5, address=SAMPLE_ADDRESS),
-            call(name='other', type='addr', balance=5, stake=10, address='another-address'),
+            call(name='sample', type='key', balance=token_amount(10), stake=token_amount(5), address=SAMPLE_ADDRESS),
+            call(name='other', type='addr', balance=token_amount(5), stake=token_amount(10), address='another-address'),
         ]
         self.assertEqual(table.add_row.call_args_list, expected_row_calls)
         table.display.assert_called_once_with()
@@ -114,8 +114,8 @@ class ListCommandTests(unittest.TestCase):
 
         # check that we call the correct number of calls
         expected_row_calls = [
-            call(name='sample', type='key', balance=10, stake=5, address=SAMPLE_ADDRESS),
-            call(name='other', type='addr', balance=5, stake=10, address='another-address'),
+            call(name='sample', type='key', balance=token_amount(10), stake=token_amount(5), address=SAMPLE_ADDRESS),
+            call(name='other', type='addr', balance=token_amount(5), stake=token_amount(10), address='another-address'),
         ]
         self.assertEqual(table.add_row.call_args_list, expected_row_calls)
         table.display.assert_called_once_with()
