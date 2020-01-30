@@ -9,7 +9,7 @@ def run_list(args):
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
     from pocketbook.table import Table
-    from pocketbook.utils import create_api, get_balance, get_stake
+    from pocketbook.utils import create_api, get_balance, get_stake, token_amount
 
     address_book = AddressBook()
     key_store = KeyStore()
@@ -38,8 +38,8 @@ def run_list(args):
             row_data = {
                 'name': key,
                 'type': 'key',
-                'balance': balance,
-                'stake': stake,
+                'balance': token_amount(balance),
+                'stake': token_amount(stake),
                 'address': str(address),
             }
 
@@ -55,8 +55,8 @@ def run_list(args):
             row_data = {
                 'name': name,
                 'type': 'addr',
-                'balance': balance,
-                'stake': stake,
+                'balance': token_amount(balance),
+                'stake': token_amount(stake),
                 'address': str(address),
             }
 

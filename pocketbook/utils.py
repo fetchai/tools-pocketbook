@@ -40,7 +40,7 @@ def token_amount(value: float) -> str:
     :param value: The input value to display
     :return: The converted value
     """
-    return '{:6.10f} FET'.format(float(value))
+    return '{:<10.10f} FET'.format(float(value))
 
 
 def get_balance(api, address):
@@ -57,7 +57,10 @@ def create_api(name: str):
     from fetchai.ledger.api import LedgerApi
 
     try:
-        return LedgerApi(network=name)
+        if name == 'local':
+            return LedgerApi('127.0.0.1', 8000)
+        else:
+            return LedgerApi(network=name)
     except:
         pass
 
