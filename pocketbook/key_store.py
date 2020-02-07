@@ -1,9 +1,10 @@
 import os
-import fnmatch
-
-from fetchai.ledger.crypto import Entity, Address, Identity
+from copy import deepcopy
 
 import toml
+from fetchai.ledger.crypto import Entity, Address
+
+from .constants import DEFAULT_KEY_STORE_ROOT
 
 
 class KeyStoreError(Exception):
@@ -26,14 +27,16 @@ class UnableToDecodeKeyError(KeyStoreError):
 
 
 class KeyStore:
-    KEY_STORE_ROOT = os.path.abspath(os.path.expanduser('~/.pocketbook'))
-    KEY_STORE_INDEX = os.path.join(KEY_STORE_ROOT, 'index.toml')
+    INDEX_FILE_NAME = 'index.toml'
 
-    def __init__(self):
-        os.makedirs(self.KEY_STORE_ROOT, exist_ok=True)
+    def __init__(self, root=None):
+        self._root = root or DEFAULT_KEY_STORE_ROOT
+        self._index_path = os.path.join(self._root, self.INDEX_FILE_NAME)
 
-        if os.path.exists(self.KEY_STORE_INDEX):
-            with open(self.KEY_STORE_INDEX, 'r') as index_file:
+        os.makedirs(self._root, exist_ok=True)
+
+        if os.path.exists(self._index_path):
+            with open(self._index_path, 'r') as index_file:
                 self._index = toml.load(index_file)
         else:
             self._index = {'key': []}
@@ -85,8 +88,56 @@ class KeyStore:
         })
         self._flush_index()
 
+    def rename_key(self, old_name: str, new_name: str) -> bool:
+
+        # do some basic checks
+        if old_name not in self.list_keys():
+            return False
+        if new_name in self.list_keys():
+            return False
+
+        # extract the old key metadata
+        old_metadata = self._lookup_meta_data(old_name)
+        if old_metadata is None:
+            return False
+
+        # move the key file
+        old_key_file_path = self._format_key_path(old_name)
+        new_key_file_path = self._format_key_path(new_name)
+        os.rename(old_key_file_path, new_key_file_path)
+
+        # remove the old entries to the metadata
+        self._remove_key_from_index(old_name)
+
+        # update and insert the new meta data into place
+        new_metadata = deepcopy(old_metadata)
+        new_metadata['name'] = new_name
+        self._index['key'].append(new_metadata)
+        self._flush_index()
+
+        return True
+
+    def remove_key(self, name: str) -> bool:
+        if name not in self.list_keys():
+            return False
+
+        # remove the key path from the disk
+        key_file_path = self._format_key_path(name)
+        if not os.path.exists(key_file_path):
+            raise RuntimeError('Key not present on disk, unable to remove')
+        os.remove(key_file_path)
+
+        # update the index
+        self._remove_key_from_index(name)
+        self._flush_index()
+
+        return True
+
+    def _remove_key_from_index(self, name: str):
+        self._index['key'] = list(filter(lambda x: x['name'] != name, self._index['key']))
+
     def _format_key_path(self, name: str):
-        return os.path.join(self.KEY_STORE_ROOT, '{}.key'.format(name))
+        return os.path.join(self._root, '{}.key'.format(name))
 
     def _lookup_meta_data(self, name: str):
         for item in self._index['key']:
@@ -94,5 +145,5 @@ class KeyStore:
                 return item
 
     def _flush_index(self):
-        with open(self.KEY_STORE_INDEX, 'w') as index_file:
+        with open(self._index_path, 'w') as index_file:
             toml.dump(self._index, index_file)

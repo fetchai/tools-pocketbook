@@ -1,0 +1,3 @@
+include *.sh
+include LICENSE
+recursive-include tests *.py
