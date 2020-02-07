@@ -8,6 +8,7 @@ from .commands.delete import run_delete
 from .commands.list import run_list
 from .commands.rename import run_rename
 from .commands.transfer import run_transfer
+from .commands.import_key import run_import
 from .disclaimer import display_disclaimer
 from .utils import NetworkUnavailableError, checked_address, to_canonical, MINIMUM_FRACTIONAL_FET
 
@@ -41,63 +42,13 @@ def parse_commandline():
     parser_transfer.add_argument('signers', nargs='+', help='The series of key names needed to sign the transaction')
     parser_transfer.set_defaults(handler=run_transfer)
 
-    parser_add = subparsers.add_parser('import', help='Imports a private key')
-    parser_add.set_defaults(handler=run_import)
+    parser_import = subparsers.add_parser('import', help='Imports a private key')
+    parser_import.set_defaults(handler=run_import)
 
     parser_rename = subparsers.add_parser('rename', aliases=['mv'], help='Renames and address or key to another name')
     parser_rename.add_argument('old', help='The name of the old account name')
     parser_rename.add_argument('new', help='The new name of the account')
     parser_rename.set_defaults(handler=run_rename)
-
-def run_import(args):
-    key_store = KeyStore()
-
-    # get the name for the new key
-    while True:
-        name = input('Enter name for key: ')
-        if name in key_store.list_keys():
-            print('Key name already exists')
-            continue
-        break
-
-    # prompt the user for the password
-    while True:
-        key_str = getpass.getpass('Enter private key (hex of b64 encoded)...: ')
-
-        try:
-            e = Entity.from_hex(key_str)
-        except:
-            try:
-                e = Entity.from_base64(key_str)
-            except:
-                print('Given key is not ecdsa secp256k1 priv key encoded as either hex or base64!')
-                continue
-
-        print('\nAssociated address: {}'.format(Address(e)))
-        print('Associated public key [hex]: {}'.format(e.public_key_hex))
-        print('Associated public key [b64]: {}'.format(e.public_key))
-        confirm = input('\nIs above correct? [y/N]: ')
-        if confirm.lower() != 'y':
-            print("\n=====================================\n")
-            continue
-
-        break
-
-    # prompt the user for the password
-    while True:
-        password = getpass.getpass('Enter password for key...: ')
-        if not is_strong_password(password):
-            print('Password too simple, try again')
-            continue
-
-        confirm = getpass.getpass('Confirm password for key.: ')
-        if password != confirm:
-            print('Passwords did not match, try again')
-            continue
-
-        break
-
-    key_store.add_key(name, password, e)
 
     parser_delete = subparsers.add_parser('delete', aliases=['rm'], help='Deletes an address or key from the wallet')
     parser_delete.add_argument('name', help='The name of the account to remove')
