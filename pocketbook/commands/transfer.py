@@ -85,6 +85,7 @@ def run_transfer(args):
     tx = TokenTxFactory.transfer(Address(from_address), destination, amount, 0, signers)
     tx.charge_rate = charge_rate
     tx.charge_limit = required_ops
+    api.set_validity_period(tx)
     for entity in signers:
         tx.sign(entity)
 
