@@ -65,6 +65,7 @@ class TransferCommandUnitTests(unittest.TestCase):
                                                        [person1.entity])
         self.assertEqual(tx.charge_rate, 1)
         self.assertEqual(tx.charge_limit, 1)
+        api.set_validity_period.assert_called_once_with(tx)
         tx.sign.assert_called_with(person1.entity)
 
         # submission of the transaction
@@ -118,6 +119,7 @@ class TransferCommandUnitTests(unittest.TestCase):
                                                        [person1.entity])
         self.assertEqual(tx.charge_rate, 2)
         self.assertEqual(tx.charge_limit, 1)
+        api.set_validity_period.assert_called_once_with(tx)
         tx.sign.assert_called_with(person1.entity)
 
         # submission of the transaction
@@ -170,6 +172,7 @@ class TransferCommandUnitTests(unittest.TestCase):
                                                        [person1.entity])
         self.assertEqual(tx.charge_rate, 1)
         self.assertEqual(tx.charge_limit, 1)
+        api.set_validity_period.assert_called_once_with(tx)
         tx.sign.assert_called_with(person1.entity)
 
         # submission of the transaction
@@ -226,6 +229,7 @@ class TransferCommandUnitTests(unittest.TestCase):
                                                        [person1.entity])
         self.assertEqual(tx.charge_rate, 1)
         self.assertEqual(tx.charge_limit, 1)
+        api.set_validity_period.assert_called_once_with(tx)
         tx.sign.assert_called_with(person1.entity)
 
         # submission of the transaction
