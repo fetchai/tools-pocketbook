@@ -32,7 +32,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     install_requires=[
-        'fetchai-ledger-api==1.0.0rc1',
+        'fetchai-ledger-api==1.0.0',
         'toml',
         'colored',
     ],
