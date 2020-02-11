@@ -1,5 +1,5 @@
 from fnmatch import fnmatch
-
+import warnings
 
 def _should_display(item, patterns):
     return any([fnmatch(item, p) for p in patterns])
@@ -10,6 +10,9 @@ def run_list(args):
     from pocketbook.key_store import KeyStore
     from pocketbook.table import Table
     from pocketbook.utils import create_api, get_balance, get_stake, token_amount
+
+    # the latest version of SDK will generate warning because we are using the staking API
+    warnings.simplefilter('ignore')
 
     address_book = AddressBook()
     key_store = KeyStore()
