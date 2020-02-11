@@ -2,7 +2,7 @@ def run_transfer(args):
     from getpass import getpass
 
     from fetchai.ledger.crypto import Address
-    from fetchai.ledger.serialisation.transaction import encode_transaction
+    from fetchai.ledger.api.token import TokenTxFactory
 
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
@@ -78,18 +78,17 @@ def run_transfer(args):
     elif from_address_name in address_book.keys():
         from_address = Address(address_book.lookup_address(from_address_name))
 
+    # cache the signers
+    signers = list(entities.values())
+
     # build up the basic transaction information
-    tx = api.tokens._create_skeleton_tx(required_ops)
+    tx = TokenTxFactory.transfer(Address(from_address), destination, amount, 0, signers)
     tx.charge_rate = charge_rate
-    tx.from_address = Address(from_address)
-    tx.add_transfer(destination, amount)
-    for entity in entities.values():
-        tx.add_signer(entity)
+    tx.charge_limit = required_ops
+    for entity in signers:
+        tx.sign(entity)
 
-    # encode and sign the transaction
-    encoded_tx = encode_transaction(tx, list(entities.values()))
-
-    # # submit the transaction
+    # submit the transaction
     print('Submitting TX...')
-    api.sync(api.tokens._post_tx_json(encoded_tx, 'transfer'))
+    api.sync(api.submit_signed_tx(tx))
     print('Submitting TX...complete')
