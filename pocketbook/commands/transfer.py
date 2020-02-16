@@ -2,7 +2,7 @@ def run_transfer(args):
     from getpass import getpass
 
     from fetchai.ledger.crypto import Address
-    from fetchai.ledger.serialisation.transaction import encode_transaction
+    from fetchai.ledger.api.token import TokenTxFactory
 
     from pocketbook.address_book import AddressBook
     from pocketbook.key_store import KeyStore
@@ -78,18 +78,32 @@ def run_transfer(args):
     elif from_address_name in address_book.keys():
         from_address = Address(address_book.lookup_address(from_address_name))
 
+    # cache the signers
+    signers = list(entities.values())
+
     # build up the basic transaction information
-    tx = api.tokens._create_skeleton_tx(required_ops)
+    tx = TokenTxFactory.transfer(Address(from_address), destination, amount, 0, signers)
     tx.charge_rate = charge_rate
-    tx.from_address = Address(from_address)
-    tx.add_transfer(destination, amount)
-    for entity in entities.values():
-        tx.add_signer(entity)
+    tx.charge_limit = required_ops
+    api.set_validity_period(tx)
+    for entity in signers:
+        tx.sign(entity)
 
-    # encode and sign the transaction
-    encoded_tx = encode_transaction(tx, list(entities.values()))
+    tx_digest = api.submit_signed_tx(tx)
+    print('TX: 0x{} submitted'.format(tx_digest))
 
-    # # submit the transaction
-    print('Submitting TX...')
-    api.sync(api.tokens._post_tx_json(encoded_tx, 'transfer'))
-    print('Submitting TX...complete')
+    # submit the transaction
+    print('Waiting for transaction to be confirmed...')
+    api.sync(tx_digest)
+    print('Waiting for transaction to be confirmed...complete')
+
+    # determine if there is a block explorer link to be printed
+    explorer_link = None
+    if args.network == 'mainnet':
+        explorer_link = 'https://explore.fetch.ai/transactions/0x{}'.format(tx_digest)
+    elif args.network == 'testnet':
+        explorer_link = 'https://explore-testnet.fetch.ai/transactions/0x{}'.format(tx_digest)
+
+    if explorer_link is not None:
+        print()
+        print('See {} for more details'.format(explorer_link))

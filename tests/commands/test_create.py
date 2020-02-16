@@ -18,6 +18,7 @@ class CreateCommandTests(unittest.TestCase):
         key_store = MockKeyStore()
         key_store.list_keys.return_value = []
         entity = MockEntity()
+        MockEntity.is_strong_password.side_effect = [True]
 
         from pocketbook.commands.create import run_create
         run_create(None)
@@ -33,6 +34,7 @@ class CreateCommandTests(unittest.TestCase):
         key_store = MockKeyStore()
         key_store.list_keys.return_value = []
         entity = MockEntity()
+        MockEntity.is_strong_password.side_effect = [True, True]
 
         from pocketbook.commands.create import run_create
         run_create(None)
@@ -50,6 +52,7 @@ class CreateCommandTests(unittest.TestCase):
         key_store = MockKeyStore()
         key_store.list_keys.return_value = []
         entity = MockEntity()
+        MockEntity.is_strong_password.side_effect = [False, True]
 
         from pocketbook.commands.create import run_create
         run_create(None)
@@ -67,6 +70,7 @@ class CreateCommandTests(unittest.TestCase):
         key_store = MockKeyStore()
         key_store.list_keys.return_value = ['foo-bar']
         entity = MockEntity()
+        MockEntity.is_strong_password.side_effect = [True]
 
         from pocketbook.commands.create import run_create
         run_create(None)

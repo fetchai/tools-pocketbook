@@ -1,6 +1,5 @@
 def run_import(args):
     from fetchai.ledger.crypto import Entity, Address
-    from fetchai.ledger.crypto.entity import _strong_password as is_strong_password
     from pocketbook.key_store import KeyStore
     import getpass
 
@@ -40,7 +39,7 @@ def run_import(args):
     # prompt the user for the password
     while True:
         password = getpass.getpass('Enter password for key...: ')
-        if not is_strong_password(password):
+        if not Entity.is_strong_password(password):
             print('Password too simple, try again')
             continue
 
